@@ -3,12 +3,9 @@
 # try deleting cache to debug
 
 import time
-
 import spotipy
 import spotipy.util as util
 from pycaw.pycaw import AudioUtilities
-from dotenv import load_dotenv
-import os
 
 
 def setup_spotify_object(username, scope, client_id, client_secret, redirect_uri):
@@ -16,12 +13,10 @@ def setup_spotify_object(username, scope, client_id, client_secret, redirect_uri
     return spotipy.Spotify(auth=token)
 
 
-load_dotenv()
-
-SPOTIPY_USERNAME = os.getenv("SPOTIPY_USERNAME")
+SPOTIPY_USERNAME = ""
 SPOTIPY_ACCESS_SCOPE = "user-read-currently-playing"
-SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
-SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
+SPOTIPY_CLIENT_ID = '${{secret.SPOTIPY_CLIENT_ID}}'
+SPOTIPY_CLIENT_SECRET = '${{secret.SPOTIPY_CLIENT_SECRET}}'
 SPOTIPY_REDIRECT_URI = "http://localhost:3000"
 
 
