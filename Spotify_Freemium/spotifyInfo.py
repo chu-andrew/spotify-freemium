@@ -1,6 +1,6 @@
 # https://www.reddit.com/r/Python/comments/ga7y7f/i_made_a_little_program_that_mutes_spotify_ads/?utm_source=share&utm_medium=web2x
 # https://github.com/MicRaj/Python-Projects/blob/a9c6d029060620887b83be9685e08b53a82ed363/AdMuter.py
-# try deleting cache
+# try deleting cache to debug
 
 import time
 
@@ -26,7 +26,7 @@ SPOTIPY_REDIRECT_URI = "http://localhost:3000"
 
 
 def main():
-    print("*"*120)
+    print("*" * 120)
     if check_info() == "#AD#":
         previous_name = "#AD#"
     elif check_info() == "closed":
@@ -34,7 +34,7 @@ def main():
     else:
         previous_name = "first_track_placeholder"
 
-    time_elapsed = 0  # limit the number of calls to api, but not at beginning
+    time_elapsed = 0  # limit the number of calls to api, but not at beginning of loop
     while True:
         current_check = check_info()
         current_name = check_info("name")
@@ -47,7 +47,7 @@ def main():
             mute_spotify_tab(False)
 
             if previous_name != current_name:
-                time_elapsed = 64
+                time_elapsed = 32
                 info_print = info(current_check)
                 if info_print == "closed":
                     # can break if no spotify is detected,
@@ -87,6 +87,8 @@ def info(track_info_for_print):
     if track_info_for_print is None:
         return "closed"
     if track_info_for_print["is_playing"]:
+        print("\n\n")
+
         descriptor_builder = []
 
         song = track_info_for_print["item"]["name"]
@@ -122,6 +124,7 @@ def info(track_info_for_print):
 
         try:
             print_lyrics(artist_for_lyric, song_for_lyric)
+            print("\n")
         except Exception:
             pass
 
@@ -130,10 +133,10 @@ def info(track_info_for_print):
 
 def print_lyrics(artist, song):
     import lyrics
-    import re
-    import requests
-    from azlyrics.azlyrics import agent
-    from bs4 import BeautifulSoup
+    # import re
+    # import requests
+    # from azlyrics.azlyrics import agent
+    # from bs4 import BeautifulSoup
 
     lyrics.print_lyrics(artist, song)
 
@@ -182,18 +185,24 @@ def ascii_art(url, strN):
     import colorama
     import ascii_magic
 
-    # im = Image.open(requests.get(url, stream=True).raw)
     ascii = ascii_magic.from_url(url=url, columns=45, width_ratio=2.75,
                                  mode=ascii_magic.Modes.TERMINAL)
+
     ascii = ascii.split("\n")
 
     for i in range(len(ascii)):
         start = 5
         if start <= i <= start + len(strN) - 1:
-            print(ascii[i] + "\t\t", end="")
-            print(f'{colorama.Style.BRIGHT + colorama.Fore.WHITE} {strN[i - start]} {colorama.Style.RESET_ALL}')
+            print_ascii_str(ascii[i])
+            print(f'{colorama.Style.BRIGHT + colorama.Fore.WHITE} {strN[i - start]}')
         else:
             print(ascii[i])
+
+
+def print_ascii_str(ascii):
+    for i in range(len(ascii)):
+        print(ascii[i], end="")
+    print("\t\t", end="")
 
 
 def mute_spotify_tab(mute):
