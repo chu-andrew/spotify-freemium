@@ -53,9 +53,10 @@ def print_lyrics(artist, song):
         lyrics = parse_korean(lyrics)
         for line in lyrics:
             print(line)
+        return True
     else:
-        print()
+        return False
 
 
 if __name__ == '__main__':
-    print_lyrics("Jannabi", "summer")
+    print_lyrics("", "")

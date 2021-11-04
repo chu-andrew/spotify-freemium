@@ -6,6 +6,10 @@ import time
 import spotipy
 import spotipy.util as util
 from pycaw.pycaw import AudioUtilities
+import dotenv
+import os
+
+from Spotify_Freemium import lyrics
 
 
 def setup_spotify_object(username, scope, client_id, client_secret, redirect_uri):
@@ -13,15 +17,16 @@ def setup_spotify_object(username, scope, client_id, client_secret, redirect_uri
     return spotipy.Spotify(auth=token)
 
 
+dotenv.load_dotenv()
+
 SPOTIPY_USERNAME = ""
 SPOTIPY_ACCESS_SCOPE = "user-read-currently-playing"
-SPOTIPY_CLIENT_ID = '${{secret.SPOTIPY_CLIENT_ID}}'
-SPOTIPY_CLIENT_SECRET = '${{secret.SPOTIPY_CLIENT_SECRET}}'
+SPOTIPY_CLIENT_ID = '6db5e4c011ab4bdb96821e346669fff7'
+SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 SPOTIPY_REDIRECT_URI = "http://localhost:3000"
 
 
 def main():
-    print("*" * 120)
     if check_info() == "#AD#":
         previous_name = "#AD#"
     elif check_info() == "closed":
@@ -42,7 +47,7 @@ def main():
             mute_spotify_tab(False)
 
             if previous_name != current_name:
-                time_elapsed = 32
+                time_elapsed = 8
                 info_print = info(current_check)
                 if info_print == "closed":
                     # can break if no spotify is detected,
@@ -82,48 +87,58 @@ def info(track_info_for_print):
     if track_info_for_print is None:
         return "closed"
     if track_info_for_print["is_playing"]:
-        print("\n\n")
 
-        descriptor_builder = []
-
-        song = track_info_for_print["item"]["name"]
-        song_for_lyric = song
-        song = len_limit(song, "song")
-        songs = song.split("\n")
-        for line in songs:
-            descriptor_builder.append(line)
-
-        num_artists = len(track_info_for_print["item"]["artists"])
-        artist_for_lyric = track_info_for_print["item"]["artists"][0]["name"]
-        if num_artists > 1:
-            artists_str = ""
-            for i in range(num_artists - 1):
-                artists_str += track_info_for_print["item"]["artists"][i]["name"] + " | "
-            artists_str += track_info_for_print["item"]["artists"][num_artists - 1]["name"]
-            artists_str = len_limit(artists_str, "artists")
-            artists = artists_str.split("\n")
-            for line in artists:
-                descriptor_builder.append(line)
-        else:
-            artists_str = "artist:\t"
-            artists_str += track_info_for_print["item"]["artists"][num_artists - 1]["name"]
-            descriptor_builder.append(artists_str)
-
-        album_str = track_info_for_print["item"]["album"]["name"]
-        album_str = len_limit(album_str, "album")
-        album_str = album_str.split("\n")
-        for line in album_str:
-            descriptor_builder.append(line)
+        description = description_builder(track_info_for_print)
 
         url = track_info_for_print["item"]["album"]["images"][1]["url"]
 
         try:
-            print_lyrics(artist_for_lyric, song_for_lyric)
-            print("\n")
+            artist_for_lyric = track_info_for_print["item"]["artists"][0]["name"]
+            song_for_lyric = track_info_for_print["item"]["name"]
+
+            print()
+            print("*" * 120)
+            if lyrics.lyric(artist_for_lyric, song_for_lyric):
+                print()
+                print_lyrics(artist_for_lyric, song_for_lyric)
+
         except Exception:
             pass
+        print()
+        ascii_art(url, description)  # print in format with ascii art
 
-        ascii_art(url, descriptor_builder)  # print in format with ascii art
+
+def description_builder(track_info_for_print):
+    description = []
+
+    song = track_info_for_print["item"]["name"]
+    song = len_limit(song, "song")
+    songs = song.split("\n")
+    for line in songs:
+        description.append(line)
+
+    num_artists = len(track_info_for_print["item"]["artists"])
+    if num_artists > 1:
+        artists_str = ""
+        for i in range(num_artists - 1):
+            artists_str += track_info_for_print["item"]["artists"][i]["name"] + " | "
+        artists_str += track_info_for_print["item"]["artists"][num_artists - 1]["name"]
+        artists_str = len_limit(artists_str, "artists")
+        artists = artists_str.split("\n")
+        for line in artists:
+            description.append(line)
+    else:
+        artists_str = "artist:\t"
+        artists_str += track_info_for_print["item"]["artists"][num_artists - 1]["name"]
+        description.append(artists_str)
+
+    album_str = track_info_for_print["item"]["album"]["name"]
+    album_str = len_limit(album_str, "album")
+    album_str = album_str.split("\n")
+    for line in album_str:
+        description.append(line)
+
+    return description
 
 
 def print_lyrics(artist, song):
@@ -180,23 +195,23 @@ def ascii_art(url, strN):
     import colorama
     import ascii_magic
 
-    ascii = ascii_magic.from_url(url=url, columns=45, width_ratio=2.75,
-                                 mode=ascii_magic.Modes.TERMINAL)
+    ascii_cover = ascii_magic.from_url(url=url, columns=45, width_ratio=2.75,
+                                       mode=ascii_magic.Modes.TERMINAL)
 
-    ascii = ascii.split("\n")
+    ascii_cover = ascii_cover.split("\n")
 
-    for i in range(len(ascii)):
+    for i in range(len(ascii_cover)):
         start = 5
         if start <= i <= start + len(strN) - 1:
-            print_ascii_str(ascii[i])
+            print_ascii_str(ascii_cover[i])
             print(f'{colorama.Style.BRIGHT + colorama.Fore.WHITE} {strN[i - start]}')
         else:
-            print(ascii[i])
+            print(ascii_cover[i])
 
 
-def print_ascii_str(ascii):
-    for i in range(len(ascii)):
-        print(ascii[i], end="")
+def print_ascii_str(ascii_cover):
+    for i in range(len(ascii_cover)):
+        print(ascii_cover[i], end="")
     print("\t\t", end="")
 
 
