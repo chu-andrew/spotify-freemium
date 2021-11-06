@@ -9,7 +9,7 @@ from pycaw.pycaw import AudioUtilities
 import dotenv
 import os
 
-from Spotify_Freemium import lyrics
+import lyrics
 
 
 def setup_spotify_object(username, scope, client_id, client_secret, redirect_uri):
@@ -195,13 +195,15 @@ def ascii_art(url, strN):
     import colorama
     import ascii_magic
 
-    ascii_cover = ascii_magic.from_url(url=url, columns=45, width_ratio=2.75,
+    colorama.init()
+
+    ascii_cover = ascii_magic.from_url(url=url, columns=45, width_ratio=2,
                                        mode=ascii_magic.Modes.TERMINAL)
 
     ascii_cover = ascii_cover.split("\n")
 
     for i in range(len(ascii_cover)):
-        start = 5
+        start = 8
         if start <= i <= start + len(strN) - 1:
             print_ascii_str(ascii_cover[i])
             print(f'{colorama.Style.BRIGHT + colorama.Fore.WHITE} {strN[i - start]}')
