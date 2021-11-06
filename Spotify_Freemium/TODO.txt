@@ -1,0 +1,3 @@
+color banding issue due to description, ascii art becomes a little less bright for the lines near the description
+word wrapping issue for the 120 column limitation that leads to the album art becoming distorted
+make code overall cleaner and easier to manage and iterate

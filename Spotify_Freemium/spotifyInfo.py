@@ -197,7 +197,7 @@ def ascii_art(url, strN):
 
     colorama.init()
 
-    ascii_cover = ascii_magic.from_url(url=url, columns=45, width_ratio=2,
+    ascii_cover = ascii_magic.from_url(url=url, columns=50, width_ratio=2,
                                        mode=ascii_magic.Modes.TERMINAL)
 
     ascii_cover = ascii_cover.split("\n")
