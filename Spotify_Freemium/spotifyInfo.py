@@ -88,8 +88,6 @@ def info(track_info_for_print):
         return "closed"
     if track_info_for_print["is_playing"]:
 
-        description = description_builder(track_info_for_print)
-
         url = track_info_for_print["item"]["album"]["images"][1]["url"]
 
         try:
@@ -105,6 +103,7 @@ def info(track_info_for_print):
         except Exception:
             pass
         print()
+        description = description_builder(track_info_for_print)
         ascii_art(url, description)  # print in format with ascii art
 
 
@@ -152,7 +151,7 @@ def print_lyrics(artist, song):
 
 
 def len_limit(names, descriptor_type):
-    limit = 50
+    limit = 40
     if descriptor_type == "artists":
         return len_limit_artist(names, limit)
     if len(names) > limit:
@@ -206,7 +205,7 @@ def ascii_art(url, strN):
         start = 8
         if start <= i <= start + len(strN) - 1:
             print_ascii_str(ascii_cover[i])
-            print(f'{colorama.Style.BRIGHT + colorama.Fore.WHITE} {strN[i - start]}')
+            print(f'{colorama.Fore.WHITE} {strN[i - start]}')
         else:
             print(ascii_cover[i])
 

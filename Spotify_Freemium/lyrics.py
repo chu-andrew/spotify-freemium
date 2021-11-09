@@ -29,7 +29,10 @@ def parse_korean(lyric):
     try:
         korean_index = lyric.index("[Korean:]")
     except ValueError:
-        korean_index = -1
+        try:
+            korean_index = lyric.index("[Hangul:]")
+        except ValueError:
+            korean_index = -1
 
     try:
         translation_index = lyric.index("[English translation:]")
