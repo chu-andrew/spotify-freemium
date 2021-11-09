@@ -160,7 +160,7 @@ def len_limit(names, descriptor_type):
         names = names.split(" ")
         for i in range(len(names)):
             if current_len + len(names[i]) > limit:
-                fixed += "\n\t\t\t\t"
+                fixed += "\n\t\t\t"
                 current_len = 0
             fixed += names[i] + " "
             current_len += len(names[i]) + 1
@@ -181,8 +181,8 @@ def len_limit_artist(names, limit):
         current_len = 0
         names = names.split(" | ")
         for i in range(len(names)):
-            if current_len + len(names[i]) > limit:
-                fixed += "\n\t\t\t\t"
+            if current_len + len(names[i]) + 2 > limit:
+                fixed += "\n\t\t\t"
                 current_len = 0
             fixed += names[i] + " | "
             current_len += len(names[i]) + 3
@@ -213,7 +213,7 @@ def ascii_art(url, strN):
 def print_ascii_str(ascii_cover):
     for i in range(len(ascii_cover)):
         print(ascii_cover[i], end="")
-    print("\t\t", end="")
+    print("\t\t", end="") # controls space between album and description
 
 
 def mute_spotify_tab(mute):
