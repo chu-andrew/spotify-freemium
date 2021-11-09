@@ -1,0 +1,5 @@
+how to create a shortcut to place on windows start menu:
+
+https://winaero.com/create-shortcut-ps1-powershell-file-windows-10/
+
+powershell.exe -File C:\Users\andre\PycharmProjects\spotify-freemium\Spotify_Freemium\spotifyInfo.ps1
