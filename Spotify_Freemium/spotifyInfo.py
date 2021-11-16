@@ -27,41 +27,40 @@ SPOTIPY_REDIRECT_URI = "http://localhost:3000"
 
 
 def main():
-    if check_info() == "#AD#":
-        previous_name = "#AD#"
-    elif check_info() == "closed":
-        previous_name = "closed"
+    if check_info()[0] == "#AD#":
+        current_displayed = "#AD#"
+    elif check_info()[0] == "closed":
+        current_displayed = "closed"
     else:
-        previous_name = "first_track_placeholder"
+        current_displayed = "first_track_placeholder"
 
     time_elapsed = 0  # limit the number of calls to api, but not at beginning of loop
+
     while True:
-        current_check = check_info()
-        current_name = check_info("name")
-        if current_check == "closed" or previous_name == "closed":
-            break
-        elif current_check == "#AD#":
+        current_check, current_song = check_info()  # since checkinfo returns array, set variables accordingly
+        if current_check == "closed" or current_displayed == "closed":
+            # can break if no spotify is detected,
+            # but that would stop user from opening this app, then spotify
+            time_elapsed = 0
+            pass
+        if current_check == "#AD#":
             mute_spotify_tab(True)
             time_elapsed = 0
         else:
             mute_spotify_tab(False)
 
-            if previous_name != current_name:
-                time_elapsed = 8
-                info_print = info(current_check)
-                if info_print == "closed":
-                    # can break if no spotify is detected,
-                    # but that would stop user from opening this app, then spotify
-                    time_elapsed = 0
-                    pass
+            if current_displayed != current_song:
+                if current_check != "closed":
+                    info(current_check)
+                    time_elapsed = 8
+                current_displayed = current_song
             else:
                 time_elapsed = time_elapsed * 0.50
 
-        previous_name = check_info("name")
         time.sleep(int(time_elapsed / 2 + 2))
 
 
-def check_info(arg_for_name="not_looking_for_name"):
+def check_info():  # returns array of full info + name or array of AD + AD or array of closed + closed
     global spotifyObject
 
     try:
@@ -73,19 +72,17 @@ def check_info(arg_for_name="not_looking_for_name"):
                                              SPOTIPY_REDIRECT_URI)
         track_info_check = spotifyObject.currently_playing()
     try:
-        if track_info_check["currently_playing_type"] == "track":
-            if arg_for_name == "name":
-                return track_info_check["item"]["name"]
-            return track_info_check
-        if track_info_check["currently_playing_type"] == "ad":
-            return "#AD#"
+        if track_info_check is None:
+            return ["closed", "closed"]
+        elif track_info_check["currently_playing_type"] == "ad":
+            return ["#AD#", "#AD#"]
+        elif track_info_check["currently_playing_type"] == "track":
+            return [track_info_check, track_info_check["item"]["name"]]
     except Exception:
         pass
 
 
 def info(track_info_for_print):
-    if track_info_for_print is None:
-        return "closed"
     if track_info_for_print["is_playing"]:
 
         url = track_info_for_print["item"]["album"]["images"][1]["url"]
@@ -151,7 +148,7 @@ def print_lyrics(artist, song):
 
 
 def len_limit(names, descriptor_type):
-    limit = 40
+    limit = 36
     if descriptor_type == "artists":
         return len_limit_artist(names, limit)
     if len(names) > limit:
@@ -213,7 +210,7 @@ def ascii_art(url, strN):
 def print_ascii_str(ascii_cover):
     for i in range(len(ascii_cover)):
         print(ascii_cover[i], end="")
-    print("\t\t", end="") # controls space between album and description
+    print("\t\t", end="")  # controls space between album and description
 
 
 def mute_spotify_tab(mute):
